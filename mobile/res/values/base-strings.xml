@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<resources>
+    <string name="app_name">자전거도로 크랙검출</string>
+    <string name="activity_name_classification">자전거도로 크랙검출</string>
+    <string name="activity_name_detection">Crack Detect</string>
+    <string name="activity_name_stylize">TF Stylize</string>
+</resources>
