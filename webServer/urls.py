@@ -16,8 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include		#include를 import
 
-# from sample.views import SampleFormView
-from sample.views import mapviews
+from sample.views import mapviews, post_list3
 
 from django.conf.urls.static import static
 from django.conf import settings
@@ -26,13 +25,10 @@ from main.views import IndexPageView, ChangeLanguageView
 # 어느 앱에서 요청을 처리할건지 지정
 urlpatterns = [
     path('admin/', admin.site.urls),
-	path('memo/', include('memo.urls')),
-	path('memo/memo.html', include('memo.urls')),
-	path('map/', mapviews),
-	# path('map/', SampleFormView.as_view()),
 	
 	path('', IndexPageView.as_view(), name='index'),
     path('i18n/', include('django.conf.urls.i18n')),
     path('language/', ChangeLanguageView.as_view(), name='change_language'),
     path('accounts/', include('accounts.urls')),
-]
+	path('upload/', post_list3),
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -32,6 +32,7 @@ public class OverlayView extends View {
         super(context, attrs);
         paint = new Paint();
         paint.setColor(Color.GREEN);
+        paint.setStrokeWidth(5f);
         paint.setStyle(Paint.Style.STROKE);
         paint.setTextSize(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 15, getResources().getDisplayMetrics()));
@@ -55,7 +56,8 @@ public class OverlayView extends View {
                 RectF box = reCalcSize(results.get(i).getLocation());
                 String title = results.get(i).getTitle() + ":"
                         + String.format("%.2f", results.get(i).getConfidence());
-                paint.setColor(colors.get(results.get(i).getId()));
+                //paint.setColor(colors.get(results.get(i).getId()));
+                paint.setColor(Color.RED); // box의 색이 눈에 안띄어서 수정.
                 canvas.drawRect(box, paint);
                 canvas.drawText(title, box.left, box.top, paint);
             }

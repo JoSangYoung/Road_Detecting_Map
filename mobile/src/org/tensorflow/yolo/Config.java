@@ -14,5 +14,5 @@ public interface Config {
     String OUTPUT_NAME = "output"; // The label of the output node.
 
     String LOGGING_TAG = "YOLO";
-    String SERVER_HOST = "http://202.31.200.228";
+    String SERVER_HOST = "http://online.nmsv.kr/";
 }

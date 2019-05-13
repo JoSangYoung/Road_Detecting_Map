@@ -28,7 +28,7 @@ SECRET_KEY = 'y!hg6chg6y!=tr^8j-m9+!lqsxk3id834oe_@d^x2)sn#%bha1'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = '*'
 
 
 # Application definition
@@ -40,7 +40,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-	'memo',
 	'django_google_maps',
     'sample',
     

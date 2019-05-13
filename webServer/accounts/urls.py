@@ -6,6 +6,11 @@ from .views import (
     RestorePasswordView, RestorePasswordDoneView, RestorePasswordConfirmView,
 )
 
+import os
+import sys
+sys.path.append(os.path.dirname(os.path.abspath(os.path.dirname(__file__))) )
+from sample.views import mapviews, deleteMarker
+
 app_name = 'accounts'
 
 urlpatterns = [
@@ -27,4 +32,7 @@ urlpatterns = [
     path('change/password/', ChangePasswordView.as_view(), name='change_password'),
     path('change/email/', ChangeEmailView.as_view(), name='change_email'),
     path('change/email/<code>/', ChangeEmailActivateView.as_view(), name='change_email_activation'),
+	
+	path('map/', mapviews, name='map'),
+	path('map/deleteMarker/', deleteMarker),
 ]

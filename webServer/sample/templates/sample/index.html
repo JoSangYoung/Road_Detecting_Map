@@ -1,13 +1,13 @@
 <html>
     <head>
-		<link rel="stylesheet" type="text/css" href="../static/django_google_maps/css/google-maps-admin.css" />
+		<link rel="stylesheet" type="text/css" href="../../../static/django_google_maps/css/google-maps-admin.css" />
         <!-- {{form.media}} -->
     </head>
 	<body>
-		address: <input type="text" name="address" id="id_address" />
+		address: <input type="text" name="address" id="id_address"/>
 		<div class="map_canvas_wrapper"><div id="map_canvas"></div></div>
-		<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js'></script>
-		<script type="text/javascript" src="http://maps.google.com/maps/api/js?key=AIzaSyBcpYLxVf6Yd9EqqbN9s639UpFajno7qj8&libraries=places" async defer></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script type="text/javascript" src="http://maps.google.com/maps/api/js?key=AIzaSyBcpYLxVf6Yd9EqqbN9s639UpFajno7qj8&libraries=places"></script>
 		
 		<script type="text/javascript">
 			function googleMapAdmin() {
@@ -25,18 +25,13 @@
 				
 				var self = {
 					initialize: function() {
-						var lat = 0;
-						var lng = 0;1
-						var zoom = 2;
+						var lat = 35.95;
+						var lng = 128.25;
+						var zoom = 7;
 						// set up initial map to be world view. also, add change
 						// event so changing address will update the map
 						
-//						var existinglocation = self.getExistingLocation();
-						
-						{% for samplemodel in samplemodels %}
-						
-						var existinglocation = new Array();
-						existinglocation.push({{samplemodel.address}})
+						var existinglocation = self.getExistingLocation();
 
 						if (existinglocation) {
 							lat = existinglocation[0];
@@ -50,14 +45,38 @@
 						  center: latlng,
 						  mapTypeId: self.getMapType()
 						};
+						
 						map = new google.maps.Map(document.getElementById("map_canvas"), myOptions);
-						map.tilesloading = false;
+						
+						{% for samplemodel in samplemodels %}
+							var arr = new Array();
+							arr.push({{samplemodel.address}})
+							
+							var content = '<div style="text-align: center;"><h3>위치: {{samplemodel.address}}</h3></div>' +
+							'<div style="text-align: center;"><p><b>메모:</br> </b>{{samplemodel.memo}}</p></div>' +
+							'<div style="text-align: center;"><p><b>현황:</br> </b><img src="{{samplemodel.status.url}}" alt="{{samplemodel.status}}" width="200" height="100"></p></div>' +
+							'<div style="text-align: center;"><p><input type="text" disabled value="마커 더블 클릭시, 삭제" style="text-align: center;"/></p></div>'
+							
+							lat = arr[0];
+							lng = arr[1];
+							var nlatlng = new google.maps.LatLng(lat,lng);
+							
+							index++;
+							var marker = new google.maps.Marker({
+								map: map,
+								position: nlatlng,
+								label: index.toString(),
+								title: "Marker " + index.toString(),
+								content: content
+							});
+							
+							self.attachMessage(marker, lat, lng);
+							
+						{% endfor %}
+						
 						if (existinglocation) {
 							self.setMarker(latlng);
-							//console.log(existinglocation);
 						}
-						
-						{% endfor %}
 
 						autocomplete = new google.maps.places.Autocomplete(
 							/** @type {!HTMLInputElement} */(document.getElementById(addressId)),
@@ -117,21 +136,13 @@
 
 					updateWithCoordinates: function(latlng) {
 						map.setCenter(latlng);
-						map.setZoom(2);
+						map.setZoom(18);
 						self.setMarker(latlng);
 						self.updateGeolocation(latlng);
 					},
 
 					setMarker: function(latlng) {
 						self.addMarker({'latlng': latlng, 'draggable': true});
-						//self.addMarker({'latlng': latlng, 'draggable': true});
-						/*
-						if (marker) {
-						   self.updateMarker(latlng);
-						} else {
-							self.addMarker({'latlng': latlng, 'draggable': true});
-						}
-						*/
 					},
 
 					addMarker: function(Options) {
@@ -142,8 +153,7 @@
 							label: index.toString(),
 							title: "Marker " + index.toString()
 						});
-						
-						console.log(marker);
+
 						self.attachMessage(marker);
 
 						var draggable = Options.draggable || false;
@@ -152,14 +162,24 @@
 						}
 					},
 					
-					attachMessage: function(marker) {
+					attachMessage: function(marker, lat, lng) {
+						if (marker.content == null)
+							marker.content = marker.position.toString();
+						
 						var infowindow = new google.maps.InfoWindow({
-							content: marker.position.toString(),
-							maxWidth: 200
+							content: marker.content,
+							//maxWidth: 200
 						});
 						
 						marker.addListener('click', function() {
 							infowindow.open(map, marker);
+						});
+						
+						marker.addListener('dblclick', function() {
+							if (marker.content == marker.position.toString())
+								marker.setMap(null);
+							else
+								location.href="/accounts/map/deleteMarker/?lat=" + lat + "&lng=" + lng;
 						});
 					},
 

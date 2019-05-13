@@ -14,10 +14,12 @@ import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.FileProvider;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -27,8 +29,12 @@ import android.widget.Toast;
 import org.tensorflow.yolo.R;
 import org.tensorflow.yolo.model.JsonObject;
 import org.tensorflow.yolo.model.NetworkServicer;
+import org.tensorflow.yolo.util.ImageUtils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -81,7 +87,7 @@ public class ManualActivity extends Activity {
         Button sendBtn = (Button)findViewById(R.id.sendImgBtn);
         sendBtn.setOnClickListener((View v)->{
             //해당 사진과 GPS를 전송하는 코드 작성
-            Toast.makeText(getApplicationContext(), "서버에 전송중입니다. 잠시만 기다려주십시오.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "크랙이 발견되었습니다..", Toast.LENGTH_LONG).show();
             if(photoFile == null)
                 sendTakePhotoIntent();
 
@@ -94,12 +100,25 @@ public class ManualActivity extends Activity {
 
             NetworkServicer jsonSender = new NetworkServicer();
             String result = jsonSender.requestJsonObject(jsonObject);
-            Log.i("Test"," " + lat+"    " + lng);
 
             if(result != null)
                 Toast.makeText(getApplicationContext(), "" + result, Toast.LENGTH_LONG).show();
-            else
-                Toast.makeText(getApplicationContext(), "서버와의 통신에 에러가 발생하였습니다.", Toast.LENGTH_LONG).show();
+            else {
+                //Toast.makeText(getApplicationContext(), "로컬 파일로 저장합니다.", Toast.LENGTH_LONG).show();
+                File savefile = null;
+                if(lat == 0 || lng == 0) {
+                    //Toast.makeText(this, "제대로된 GPS위치를 읽어들이지 못하고 있습니다.", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                else {
+                    savefile = new File(String.format("%s/crack/%f_%f.png", getExternalFilesDir(Environment.DIRECTORY_PICTURES).getAbsolutePath(), lat, lng));
+                }
+//                try {
+//                    ImageUtils.copyFile(photoFile, savefile);
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+            }
             finish();
         });
 
@@ -195,4 +214,7 @@ public class ManualActivity extends Activity {
         imageFilePath = image.getAbsolutePath();
         return image;
     }
+
+
+
 }

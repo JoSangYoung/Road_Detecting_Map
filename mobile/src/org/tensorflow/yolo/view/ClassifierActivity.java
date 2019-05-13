@@ -15,6 +15,7 @@ import android.media.Image;
 import android.media.ImageReader;
 import android.media.ImageReader.OnImageAvailableListener;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.SystemClock;
 import android.provider.Settings;
 import android.support.v4.app.ActivityCompat;
@@ -37,6 +38,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Vector;
 
@@ -165,43 +168,6 @@ public class ClassifierActivity extends TextToSpeechActivity implements OnImageA
             lastProcessingTimeMs = SystemClock.uptimeMillis() - startTime;
             overlayView.setResults(results);
             speak(results);
-
-            if(!results.isEmpty()){
-                //create a file to write bitmap data
-                File f = new File(getApplicationContext().getCacheDir(), "tempCrackImg");
-                try {
-                    f.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                //Convert bitmap to byte array
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                croppedBitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
-                byte[] bitmapdata = bos.toByteArray();
-
-                //write the bytes in file
-                FileOutputStream fos = null;
-                try {
-                    fos = new FileOutputStream(f);
-                    fos.write(bitmapdata);
-                    fos.flush();
-                    fos.close(); // hmmmm...
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }finally {
-                    //fos.close();
-                }
-                JsonObject jsonObject = new JsonObject("detect", "gps", lng, lat, f);
-                String result = jsonSender.requestJsonObject(jsonObject);
-                Log.i("Test"," " + lat+"    " + lng);
-
-                if(result != null)
-                    Toast.makeText(getApplicationContext(), "" + result, Toast.LENGTH_LONG).show();
-                else
-                    Toast.makeText(getApplicationContext(), "서버와의 통신에 에러가 발생하였습니다.", Toast.LENGTH_LONG).show();
-            }
-
             requestRender();
             computing = false;
         });
@@ -233,8 +199,25 @@ public class ClassifierActivity extends TextToSpeechActivity implements OnImageA
         lines.add("자동으로 크랙을 검출하여 확인합니다.");
         lines.add("프레임: " + previewWidth + "x" + previewHeight);
         lines.add("뷰크기: " + canvas.getWidth() + "x" + canvas.getHeight());
+        if (lat ==0. && lng == 0.)
+            lines.add("LatLng: Error");
+        else
+            lines.add("LatLng: " + lat + ", " + lng);
         lines.add("검증소요: " + lastProcessingTimeMs + "ms");
 
         borderedText.drawLines(canvas, 10, 10, lines);
+    }
+
+    private File createImageFile() throws IOException {
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "TEST_" + timeStamp + "_";
+        File storageDir = getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        File image = File.createTempFile(
+                imageFileName,      /* prefix */
+                ".jpg",         /* suffix */
+                storageDir          /* directory */
+        );
+        //imageFilePath = image.getAbsolutePath();
+        return image;
     }
 }

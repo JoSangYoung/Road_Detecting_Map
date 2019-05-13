@@ -1,5 +1,5 @@
 from django.views.generic import TemplateView
-
+from django.http import HttpResponse
 
 class IndexPageView(TemplateView):
     template_name = 'main/index.html'

@@ -3,6 +3,7 @@ package org.tensorflow.yolo.util;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.media.Image;
+import android.net.Uri;
 import android.util.Base64;
 
 import java.io.ByteArrayOutputStream;
@@ -12,6 +13,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
 /**
  * Utility class for manipulating images.
@@ -134,9 +136,29 @@ public class ImageUtils {
         return matrix;
     }
 
+    public static void copyFile(File sourceFile, File destFile) throws IOException {
+        if (!sourceFile.exists()) {
+            return;
+        }
+
+        FileChannel source = null;
+        FileChannel destination = null;
+        source = new FileInputStream(sourceFile).getChannel();
+        destination = new FileOutputStream(destFile).getChannel();
+        if (destination != null && source != null) {
+            destination.transferFrom(source, 0, source.size());
+        }
+        if (source != null) {
+            source.close();
+        }
+        if (destination != null) {
+            destination.close();
+        }
+    }
+
     public static String fileToString(File file) {
 
-        String fileString = new String();
+        String fileString = "";
         FileInputStream inputStream =  null;
         ByteArrayOutputStream byteOutStream = null;
 
