@@ -8,9 +8,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import org.tensorflow.yolo.R;
+import org.tensorflow.yolo.ThresholdController;
 
 public class MainActivity extends Activity {
 
@@ -33,6 +35,13 @@ public class MainActivity extends Activity {
         exitBtn.setOnClickListener((View v) -> {
             finish();
         });
+        Button settingBtn = (Button)findViewById(R.id.setButton);
+        settingBtn.setOnClickListener((View v)->{
+            EditText thresholdTxt = (EditText)findViewById(R.id.thresholdTxt);
+            ThresholdController.THRESHOLD = Float.valueOf(thresholdTxt.getText().toString());
+            Toast.makeText(MainActivity.this, "임계값이 " + ThresholdController.THRESHOLD + "로 변경되었습니다.", Toast.LENGTH_SHORT).show();
+        });
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             if (checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
                     && checkSelfPermission(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED

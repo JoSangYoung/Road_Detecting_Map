@@ -26,6 +26,7 @@ import android.widget.Toast;
 
 import org.tensorflow.yolo.R;
 import org.tensorflow.yolo.TensorFlowImageRecognizer;
+import org.tensorflow.yolo.ThresholdController;
 import org.tensorflow.yolo.model.JsonObject;
 import org.tensorflow.yolo.model.NetworkServicer;
 import org.tensorflow.yolo.model.Recognition;
@@ -139,7 +140,6 @@ public class ClassifierActivity extends TextToSpeechActivity implements OnImageA
     @Override
     public void onImageAvailable(final ImageReader reader) {
         Image image = null;
-
         try {
             image = reader.acquireLatestImage();
 
@@ -169,6 +169,39 @@ public class ClassifierActivity extends TextToSpeechActivity implements OnImageA
             overlayView.setResults(results);
             speak(results);
             requestRender();
+            if(!results.isEmpty()){
+                //create a file to write bitmap data
+                File f = new File(getApplicationContext().getCacheDir(), "tempCrackImg");
+                try {
+                    f.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                //Convert bitmap to byte array
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                croppedBitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
+                byte[] bitmapdata = bos.toByteArray();
+
+                //write the bytes in file
+                FileOutputStream fos = null;
+                try {
+                    fos = new FileOutputStream(f);
+                    fos.write(bitmapdata);
+                    fos.flush();
+                    fos.close(); // hmmmm...
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }finally {
+                    //fos.close();
+                }
+                JsonObject jsonObject = new JsonObject("detect", "gps", lng, lat, f);
+                String result = jsonSender.requestJsonObject(jsonObject);
+                Log.i("Test"," " + lat+"    " + lng);
+
+
+                Toast.makeText(getApplicationContext(), "서버에 크랙을 전송하였습니다.", Toast.LENGTH_LONG).show();
+            }
             computing = false;
         });
     }

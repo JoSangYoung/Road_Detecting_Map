@@ -23,10 +23,12 @@ import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.tensorflow.yolo.R;
+import org.tensorflow.yolo.ThresholdController;
 import org.tensorflow.yolo.model.JsonObject;
 import org.tensorflow.yolo.model.NetworkServicer;
 import org.tensorflow.yolo.util.ImageUtils;

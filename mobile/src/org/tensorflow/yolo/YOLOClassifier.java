@@ -26,7 +26,7 @@ public class YOLOClassifier {
     private final static double anchors[] = {1.08,1.19,  3.42,4.41,  6.63,11.38,  9.42,5.11,  16.62,10.52};
     private final static int SIZE = 13;
     private final static int MAX_RECOGNIZED_CLASSES = 13;
-    private final static float THRESHOLD = 0.3f;
+    //private final static float THRESHOLD = 0.3f;
     private final static int MAX_RESULTS = 15;
     private final static int NUMBER_OF_BOUNDING_BOX = 5;
     private static YOLOClassifier classifier;
@@ -102,7 +102,7 @@ public class YOLOClassifier {
             ArgMax.Result argMax = new ArgMax(new SoftMax(boundingBox.getClasses()).getValue()).getResult();
             double confidenceInClass = argMax.getMaxValue() * boundingBox.getConfidence();
 
-            if (confidenceInClass > THRESHOLD) {
+            if (confidenceInClass > ThresholdController.THRESHOLD) {
                 predictionQueue.add(new Recognition(argMax.getIndex(), labels.get(argMax.getIndex()), (float) confidenceInClass,
                         new BoxPosition((float) (boundingBox.getX() - boundingBox.getWidth() / 2),
                                 (float) (boundingBox.getY() - boundingBox.getHeight() / 2),
