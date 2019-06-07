@@ -16,7 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include		#include를 import
 
-from sample.views import mapviews, post_list3
+from sample.views import mapviews, post_mobile
 
 from django.conf.urls.static import static
 from django.conf import settings
@@ -30,5 +30,5 @@ urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
     path('language/', ChangeLanguageView.as_view(), name='change_language'),
     path('accounts/', include('accounts.urls')),
-	path('upload/', post_list3),
+	path('upload/', post_mobile),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

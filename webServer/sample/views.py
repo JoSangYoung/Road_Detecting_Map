@@ -10,8 +10,8 @@ import sqlite3
 import os
 
 MEDIA_ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),'..' , 'image'))
-BASE_ROOT =  os.path.normpath(os.path.join(MEDIA_ROOT, ".."))
-conn = sqlite3.connect(os.path.join(BASE_ROOT, "db.sqlite3"), isolation_level=None)
+#BASE_ROOT =  os.path.normpath(os.path.join(MEDIA_ROOT, ".."))
+#conn = sqlite3.connect(os.path.join(BASE_ROOT, "db.sqlite3"), isolation_level=None)
 
 def mapviews(request):
 	samplemodels = SampleModel.objects.all()
@@ -35,7 +35,7 @@ def deleteMarker(request):
 	return render(request, 'sample/index.html', context)
 
 @csrf_exempt
-def post_list3(request):
+def post_mobile(request):
 	datas = json.loads(request.body)
 	#print(datas)
 	flag = True
@@ -57,8 +57,15 @@ def post_list3(request):
 	fp = open(os.path.join(MEDIA_ROOT, filename), "wb")
 	fp.write(base64.b64decode(imgBinary))
 	if flag:
-		cur = conn.cursor()
-		sql = """INSERT INTO sample_samplemodel (id, address, geolocation, memo, status) VALUES (0, {0}, {0}, {1}, {2});""".format("{0}, {1}".format(lng, lat), "", filename)
-		cur.execute(sql)
+		model = SampleModel(
+			address="{0}, {1}".format(lat, lng), 
+			geolocation="{0}, {1}".format(lat, lng),
+			memo="mobile", 
+			status=filename
+		)
+		model.save()
+#		cur = conn.cursor()
+#		sql = """INSERT INTO sample_samplemodel (id, address, geolocation, memo, status) VALUES (0, {0}, {0}, {1}, {2});""".format(, "", filename)
+#		cur.execute(sql)
 	print(datetime.datetime.now().strftime("%Y%m%d_%H%M%S"), "mobile upload response success.")
 	return JsonResponse({'result' : 'success'}, json_dumps_params = {'ensure_ascii': True})
