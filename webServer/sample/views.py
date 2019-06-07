@@ -60,4 +60,5 @@ def post_list3(request):
 		cur = conn.cursor()
 		sql = """INSERT INTO sample_samplemodel (id, address, geolocation, memo, status) VALUES (0, {0}, {0}, {1}, {2});""".format("{0}, {1}".format(lng, lat), "", filename)
 		cur.execute(sql)
+	print(datetime.datetime.now().strftime("%Y%m%d_%H%M%S"), "mobile upload response success.")
 	return JsonResponse({'result' : 'success'}, json_dumps_params = {'ensure_ascii': True})
